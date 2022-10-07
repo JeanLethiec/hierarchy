@@ -7,6 +7,7 @@ import com.ceihtel.doodling.dto.DoodleDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -16,7 +17,24 @@ public class DoodleMapper {
     private final DoodleRepository doodleRepository;
 
     public List<DoodleDTO> map(List<Doodle> doodles) {
-        return doodles.stream().map(this::map).toList();
+        return cleanupTree(doodles).stream().map(this::map).toList();
+    }
+
+    /**
+     * Restructure the original list as a tree
+     * @param initialDoodles List of all doodles, straight from the repository
+     * @return Tree structure of doodles with their children
+     */
+    public List<Doodle> cleanupTree(List<Doodle> initialDoodles) {
+        var cleanedDoodles = new ArrayList<Doodle>();
+
+        initialDoodles.forEach(initialDoodle -> {
+            if (initialDoodles.stream().noneMatch(x -> x.hasChild(initialDoodle))) {
+                cleanedDoodles.add(initialDoodle);
+            }
+        });
+
+        return cleanedDoodles;
     }
 
     public DoodleDTO map(Doodle doodle) {

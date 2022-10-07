@@ -30,4 +30,8 @@ public class Doodle {
 
     @OneToMany(mappedBy = "parent")
     private List<Doodle> children = new ArrayList<>();
+
+    public boolean hasChild(Doodle doodle) {
+        return children.contains(doodle) || children.stream().anyMatch(child -> child.hasChild(doodle));
+    }
 }
